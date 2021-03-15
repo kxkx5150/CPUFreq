@@ -1,2 +1,3 @@
 # CPUFreq
- CPU Frequency & Memory usage
+ CPU Frequency, CPU Usage, Memory usage
+
