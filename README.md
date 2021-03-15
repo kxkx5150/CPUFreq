@@ -1,5 +1,6 @@
 # CPUFreq
  CPU Frequency, CPU Usage, Memory usage  
+ CPU 周波数、使用率、メモリ使用率  
  Windows10
 
 <br><br>
