@@ -160,6 +160,18 @@
   <data name="checkBox1.Text" xml:space="preserve">
     <value>メモリ使用率</value>
   </data>
+  <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 12</value>
+  </data>
+  <data name="label7.Text" xml:space="preserve">
+    <value>CPU 周波数</value>
+  </data>
+  <data name="label8.Size" type="System.Drawing.Size, System.Drawing">
+    <value>85, 12</value>
+  </data>
+  <data name="label8.Text" xml:space="preserve">
+    <value>Memory 使用率</value>
+  </data>
   <data name="button1.Text" xml:space="preserve">
     <value>Windows起動時に自動実行</value>
   </data>
@@ -168,5 +180,11 @@
   </data>
   <data name="comboBox1.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 23</value>
+  </data>
+  <data name="label10.Size" type="System.Drawing.Size, System.Drawing">
+    <value>68, 12</value>
+  </data>
+  <data name="label10.Text" xml:space="preserve">
+    <value>CPU 使用率</value>
   </data>
 </root>

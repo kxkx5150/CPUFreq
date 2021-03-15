@@ -85,6 +85,18 @@ namespace CPUFreq.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Yellow")]
+        public global::System.Drawing.Color _usageColor {
+            get {
+                return ((global::System.Drawing.Color)(this["_usageColor"]));
+            }
+            set {
+                this["_usageColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool _cpuUsage {
             get {
@@ -92,6 +104,18 @@ namespace CPUFreq.Properties {
             }
             set {
                 this["_cpuUsage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool _barMode {
+            get {
+                return ((bool)(this["_barMode"]));
+            }
+            set {
+                this["_barMode"] = value;
             }
         }
     }

@@ -17,8 +17,14 @@
     <Setting Name="_memColor" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">Orange</Value>
     </Setting>
+    <Setting Name="_usageColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Yellow</Value>
+    </Setting>
     <Setting Name="_cpuUsage" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="_barMode" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

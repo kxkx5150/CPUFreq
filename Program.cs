@@ -10,7 +10,7 @@ namespace CPUFreq {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form1 fm = new Form1();
+            Form1 frm = new Form1();
             Application.Run();
         }
     }

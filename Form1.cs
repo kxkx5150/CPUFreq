@@ -1,68 +1,135 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Management;
-using System.Windows.Forms;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
+using System.Windows.Forms;
 
 namespace CPUFreq {
+
     public partial class Form1 : Form {
+        public bool barMode = true;
         public bool cpuUsage = false;
         public int interval = 1000;
         public bool showMemory = true;
         public int memCount = 5;
         public Color cpuColor = Color.Lime;
         public Color memColor = Color.Orange;
+        public Color usageColor = Color.Yellow;
 
         private int maxFreq;
         private int count = -1;
         private NotifyIcon notifyIcon1 = new NotifyIcon();
         private PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        [System.Runtime.InteropServices.DllImport("user32.dll", CharSet = CharSet.Auto)]
-        extern static bool DestroyIcon(IntPtr handle);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool DestroyIcon(IntPtr handle);
 
         private void timer1_Tick(object sender, EventArgs e) {
             getInfo();
         }
-        public void CreateTextIcon(string str, Color color) {
+
+        private void CreateTextIcon(string str, Color color) {
             SolidBrush brush = new SolidBrush(color);
             Font fontToUse = new Font("MS Gothic", 14, FontStyle.Bold, GraphicsUnit.Pixel);
-            Bitmap bitmapText = new Bitmap(16, 16);
-
-            Graphics g = Graphics.FromImage(bitmapText);
+            Bitmap bitmap = new Bitmap(16, 16);
+            Graphics g = Graphics.FromImage(bitmap);
             g.FillRectangle(Brushes.Black, g.VisibleClipBounds);
             g.DrawString(str, fontToUse, brush, -1, 1);
-            IntPtr Hicon = bitmapText.GetHicon();
+
+            IntPtr Hicon = bitmap.GetHicon();
             Icon newIcon = Icon.FromHandle(Hicon);
             notifyIcon1.Icon = newIcon;
 
             brush.Dispose();
             fontToUse.Dispose();
-            bitmapText.Dispose();
+
+            bitmap.Dispose();
             g.Dispose();
             newIcon.Dispose();
             DestroyIcon(newIcon.Handle);
         }
+
+        private void CreateLineIcon(int cpu, int usage, int mem) {
+            Bitmap bitmap = new Bitmap(16, 16);
+            Graphics g = Graphics.FromImage(bitmap);
+            g.FillRectangle(Brushes.Black, g.VisibleClipBounds);
+
+            Pen pen1 = new Pen(cpuColor, 2);
+            g.DrawLine(pen1, 3, 16, 3, 16 - (int)(Math.Ceiling(cpu * 0.16)));
+
+            Pen pen2 = new Pen(usageColor, 2);
+            g.DrawLine(pen2, 8, 16, 8, 16 - (int)(Math.Ceiling(usage * 0.16)));
+
+            Pen pen3 = new Pen(memColor, 2);
+            g.DrawLine(pen3, 13, 16, 13, 16 - (int)(Math.Ceiling(mem * 0.16)));
+
+            IntPtr Hicon = bitmap.GetHicon();
+            Icon newIcon = Icon.FromHandle(Hicon);
+            notifyIcon1.Icon = newIcon;
+
+            pen1.Dispose();
+            pen2.Dispose();
+            pen3.Dispose();
+
+            bitmap.Dispose();
+            g.Dispose();
+            newIcon.Dispose();
+            DestroyIcon(newIcon.Handle);
+        }
+
+        private void getInfo() {
+            count++;
+
+            if (count == 0) {
+                changeInteval();
+            } else if (barMode) {
+                int frq = getCPUFrequency();
+                int usage = getCPUUsage();
+                int mem = getMemoryInfo();
+                CreateLineIcon(frq * 100 / maxFreq, usage, mem);
+            } else if (showMemory && count % memCount == 0) {
+                count = 0;
+                int mem = getMemoryInfo();
+                CreateTextIcon(mem.ToString("D2"), memColor);
+            } else if (cpuUsage) {
+                int usage = getCPUUsage();
+                CreateTextIcon(usage.ToString("D2"), usageColor);
+            } else {
+                int frq = getCPUFrequency();
+                frq = frq / 100;
+                CreateTextIcon(frq.ToString("D2"), cpuColor);
+            }
+        }
+
         private void getOptions() {
+            barMode = Properties.Settings.Default._barMode;
             cpuUsage = Properties.Settings.Default._cpuUsage;
             interval = Properties.Settings.Default._interval;
             showMemory = Properties.Settings.Default._showMemory;
             memCount = Properties.Settings.Default._memCount;
             cpuColor = Properties.Settings.Default._cpuColor;
             memColor = Properties.Settings.Default._memColor;
+            usageColor = Properties.Settings.Default._usageColor;
         }
+
         private void setOptions() {
+            Properties.Settings.Default._barMode = barMode;
             Properties.Settings.Default._cpuUsage = cpuUsage;
             Properties.Settings.Default._interval = interval;
             Properties.Settings.Default._showMemory = showMemory;
             Properties.Settings.Default._memCount = memCount;
             Properties.Settings.Default._cpuColor = cpuColor;
             Properties.Settings.Default._memColor = memColor;
+            Properties.Settings.Default._usageColor = usageColor;
             Properties.Settings.Default.Save();
         }
+
         private void setFormOptions() {
-            if (cpuUsage) {
+            if (barMode) {
+                comboBox1.SelectedIndex = 2;
+            } else if (cpuUsage) {
                 comboBox1.SelectedIndex = 1;
             } else {
                 comboBox1.SelectedIndex = 0;
@@ -72,7 +139,9 @@ namespace CPUFreq {
             numericUpDown2.Value = memCount;
             label5.BackColor = cpuColor;
             label6.BackColor = memColor;
+            label9.BackColor = usageColor;
         }
+
         private void Form1_Load(object sender, EventArgs e) {
             setFormOptions();
         }
@@ -103,27 +172,11 @@ namespace CPUFreq {
             notifyIcon1.ContextMenuStrip = menu;
             notifyIcon1.DoubleClick += new EventHandler(NotifyIcon1_DoubleClick);
         }
+
         private void changeInteval() {
             timer1.Stop();
             timer1.Interval = interval;
             timer1.Start();
-        }
-        private void getInfo() {
-            count++;
-
-            if (count == 0) {
-                changeInteval();
-            } else if (showMemory && count % memCount == 0) {
-                count = 0;
-                int mem = getMemoryInfo();
-                CreateTextIcon(mem.ToString("D2"), memColor);
-            }else if (cpuUsage) {
-                int usage = getCPUUsage();
-                CreateTextIcon(usage.ToString("D2"), cpuColor);
-            } else {
-                int frq = getCPUFrequency();
-                CreateTextIcon(frq.ToString("D2"), cpuColor);
-            }
         }
 
         private int getMemoryInfo() {
@@ -131,10 +184,11 @@ namespace CPUFreq {
             Int64 tot = PerformanceInfo.GetTotalMemoryInMiB();
             decimal percentFree = ((decimal)phav / (decimal)tot) * 100;
             decimal percentOccupied = 100 - percentFree;
-            return Convert.ToInt32(percentOccupied);
+            return (int)(percentOccupied);
         }
+
         private int getCPUUsage() {
-            return Convert.ToInt32(cpuCounter.NextValue());
+            return (int)(cpuCounter.NextValue());
         }
 
         private int getCPUFrequency() {
@@ -144,25 +198,30 @@ namespace CPUFreq {
             foreach (ManagementObject objPerf in colPerf) {
                 cpuPerf += Double.Parse(objPerf["PercentProcessorPerformance"].ToString());
             }
-            Double tmp = (maxFreq * (cpuPerf / (10000 * colPerf.Count)));
-            return Convert.ToInt32(Math.Ceiling(tmp));
+            Double tmp = (maxFreq * (cpuPerf / (100 * colPerf.Count)));
+            return (int)(Math.Ceiling(tmp));
         }
+
         private int getMaxFreq() {
             ManagementObjectSearcher objSearchCPU = new ManagementObjectSearcher("root\\CIMV2", "SELECT * FROM  Win32_Processor");
             ManagementObjectCollection.ManagementObjectEnumerator cpuEnum = objSearchCPU.Get().GetEnumerator();
             cpuEnum.MoveNext();
             return System.Int32.Parse(cpuEnum.Current["MaxClockSpeed"].ToString());
         }
+
         private void Close_Click(object sender, EventArgs e) {
             notifyIcon1.Visible = false;
             Application.Exit();
         }
+
         private void openSettings(object sender, EventArgs e) {
             this.Show();
         }
+
         private void NotifyIcon1_DoubleClick(object sender, EventArgs e) {
             this.Show();
         }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
             if (e.CloseReason == CloseReason.UserClosing) {
                 e.Cancel = true;
@@ -184,6 +243,15 @@ namespace CPUFreq {
             if (dr == System.Windows.Forms.DialogResult.OK) {
                 memColor = colorDialog1.Color;
                 label6.BackColor = colorDialog1.Color;
+                setOptions();
+            }
+        }
+
+        private void label9_Click(object sender, EventArgs e) {
+            DialogResult dr = colorDialog1.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK) {
+                usageColor = colorDialog1.Color;
+                label9.BackColor = colorDialog1.Color;
                 setOptions();
             }
         }
@@ -222,15 +290,28 @@ namespace CPUFreq {
         }
 
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e) {
-            if(comboBox1.SelectedIndex == 0) {
+            if (comboBox1.SelectedIndex == 0) {
                 cpuUsage = false;
+                barMode = false;
+                checkBox1.Show();
+                groupBox1.Show();
+            } else if (comboBox1.SelectedIndex == 2) {
+                cpuUsage = false;
+                barMode = true;
+                checkBox1.Hide();
+                groupBox1.Hide();
             } else {
                 cpuUsage = true;
+                barMode = false;
+                checkBox1.Show();
+                groupBox1.Show();
             }
             setOptions();
         }
     }
+
     public static class PerformanceInfo {
+
         [DllImport("psapi.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetPerformanceInfo([Out] out PerformanceInformation PerformanceInformation, [In] int Size);
@@ -260,7 +341,6 @@ namespace CPUFreq {
             } else {
                 return -1;
             }
-
         }
 
         public static Int64 GetTotalMemoryInMiB() {
@@ -270,8 +350,6 @@ namespace CPUFreq {
             } else {
                 return -1;
             }
-
         }
     }
-
 }
