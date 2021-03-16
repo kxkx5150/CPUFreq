@@ -187,4 +187,7 @@
   <data name="label10.Text" xml:space="preserve">
     <value>CPU 使用率</value>
   </data>
+  <data name="toolStripMenuItem1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>182, 6</value>
+  </data>
 </root>
