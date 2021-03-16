@@ -1,7 +1,12 @@
 # CPUFreq
- CPU Frequency, CPU Usage, Memory usage  
- CPU 周波数、使用率、メモリ使用率  
- Windows10
+ CPU Frequency　(CPU 周波数)  
+ CPU Usage　(CPU 使用率)  
+ Memory usage　(メモリ使用率 )  
+ Change Windows Power Plan　(Windows 電源プラン変更)  
+ 
+ <br>
+ 
+  Windows10
 
 <br><br>
 
