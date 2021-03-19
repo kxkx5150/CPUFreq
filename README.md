@@ -8,6 +8,10 @@
  
   Windows10
 
+<br>
+
+c++ ver https://github.com/kxkx5150/CPUFreq_cpp
+
 <br><br>
 
 ![キャプチャ](https://user-images.githubusercontent.com/10168979/111167837-d820d480-85e4-11eb-93b8-3da6190d2260.PNG)
