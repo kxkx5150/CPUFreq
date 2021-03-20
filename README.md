@@ -10,7 +10,8 @@
 
 <br>
 
-c++ ver https://github.com/kxkx5150/CPUFreq_cpp
+軽量なc++ バージョン  
+https://github.com/kxkx5150/CPUFreq_cpp
 
 <br><br>
 
